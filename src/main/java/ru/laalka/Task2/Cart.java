@@ -3,6 +3,7 @@ package ru.laalka.Task2;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 /**
  * Корзина
@@ -41,44 +42,37 @@ public class Cart<T extends Food> {
      * Балансировка корзины
      */
     public void cardBalancing() {
-        boolean proteins = false;
-        boolean fats = false;
-        boolean carbohydrates = false;
-
-        for (var food : foodstuffs) {
-            if (!proteins && food.getProteins())
-                proteins = true;
-            else if (!fats && food.getFats())
-                fats = true;
-            else if (!carbohydrates && food.getCarbohydrates())
-                carbohydrates = true;
-            if (proteins && fats && carbohydrates)
-                break;
-        }
+        boolean proteins = foodstuffs.stream().anyMatch(Food::getProteins);
+        boolean fats = foodstuffs.stream().anyMatch(Food::getFats);
+        boolean carbohydrates = foodstuffs.stream().anyMatch(Food::getCarbohydrates);
 
         if (proteins && fats && carbohydrates) {
             System.out.println("Корзина уже сбалансирована по БЖУ");
             return;
         }
-        for (var thing : market.getThings(Food.class)) {
-            if (!proteins && thing.getProteins()) {
-                proteins = true;
-                foodstuffs.add((T) thing);
-            } else if (!fats && thing.getFats()) {
-                fats = true;
-                foodstuffs.add((T) thing);
-            } else if (!carbohydrates && thing.getCarbohydrates()) {
-                carbohydrates = true;
-                foodstuffs.add((T) thing);
-            }
-            if (proteins && fats && carbohydrates)
-                break;
-        }
+
+        proteins = needAdd(proteins, Food::getProteins);
+        fats = needAdd(fats, Food::getFats);
+        carbohydrates = needAdd(carbohydrates, Food::getCarbohydrates);
 
         if (proteins && fats && carbohydrates)
             System.out.println("Корзина сбалансирована по БЖУ");
         else
             System.out.println("Корзину невозможно сбалансировать по БЖУ");
+    }
+
+    /*private void isBalanced(boolean proteins, boolean fats, boolean carbohydrates) {
+        if (proteins && fats && carbohydrates)
+            System.out.println("Корзина сбалансирована по БЖУ");
+    }*/
+
+    private boolean needAdd(boolean hasElement, Predicate<Food> predicate){
+        if(!hasElement)
+            market.getThings(Food.class).stream()
+                    .filter(predicate)
+                    .findFirst()
+                    .ifPresent(food -> foodstuffs.add((T) food));
+        return false;
     }
 
 
