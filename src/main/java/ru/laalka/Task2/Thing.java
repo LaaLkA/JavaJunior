@@ -1,2 +1,13 @@
-package ru.laalka.Task2;public interface Thing {
+package ru.laalka.Task2;
+
+/**
+ * Вещь
+ */
+public interface Thing {
+
+    /**
+     * Получить наименование вещи
+     * @return наименование вещи
+     * */
+    String getName();
 }

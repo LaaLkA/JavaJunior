@@ -1,2 +1,6 @@
-package ru.laalka.Task2;public interface HealthyFood {
+package ru.laalka.Task2;
+/**
+ * Здоровая еда
+ */
+public interface HealthyFood extends Food{
 }
